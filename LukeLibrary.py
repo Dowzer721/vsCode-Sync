@@ -1,9 +1,10 @@
 
-
+"""
 # Add this to beginning of file if not in same branch as this file:
-# import sys
-# sys.path.append("C:\\Users\\Luke\\Documents\\Learning Python\\")
-# import LukeLibrary as LL
+import sys
+sys.path.append("C:\\Users\\Luke\\Documents\\Learning Python\\")
+import LukeLibrary as LL
+"""
 
 import math
 
@@ -75,6 +76,10 @@ class Vector:
     #     self.y = newVec.y
     #     if self.z != None:
     #         self.z = newVec.z
+    def randomRotation(self, amount=0.1):
+        hdg = self.heading()
+        newHdg = hdg + randomFloat(-amount, amount)
+        self.rotateToAngle(newHdg)
 
     # --- Return scalar:
     def distance(self, vec):
@@ -95,6 +100,10 @@ class Vector:
         yProduct = self.y * vec.y
         zProduct = self.z * vec.z if (self.z != None and vec.z != None) else 0.0
         return xProduct + yProduct + zProduct
+    
+    # --- Return manipulated self values:
+    def toInt(self):
+        return (int(self.x), int(self.y), 0 if self.z == None else int(self.z))
 
 class Sensor:
     def __init__(self):
@@ -161,14 +170,14 @@ class Sensor:
             thickness
         )
 
-def randomFloat(min_ = 0.0, max_ = 1.0, precision = 3):
+def randomFloat(min_ = 0.0, max_ = 1.0, decimalPlaces_ = 3):
     min_ = min(min_, max_)
     max_ = max(min_, max_)
     
     rng = max_ - min_
     random.seed(time.time())
-    pct = random.randint(0, 10**precision) / float(10**precision)
-    return float(round(min_ + (rng * pct), precision))
+    pct = random.randint(0, 10**decimalPlaces_) / float(10**decimalPlaces_)
+    return float(round(min_ + (rng * pct), decimalPlaces_))
 
 def mapToRange(input, inputMin=-1.0, inputMax=1.0, outputMin=0.0, outputMax=1.0):
     # mapToRange(40, -10, 90, 0, 10)
