@@ -5,15 +5,13 @@ import LukeLibrary as LL
 
 import matplotlib.pyplot as plt
 
-learningRate = 0.1
+learningRate = LL.randomFloat(0.01, 0.1) # 0.01
 
-i = 1.5
-w = 0.8
-y = 0.8
+i = LL.randomFloat(0.0, 5.0) # 1.5
+w = LL.randomFloat() # 0.8
+y = LL.randomFloat(0.0, 5.0) # 0.8
 a = lambda: i * w
 C = lambda: (a() - y) ** 2
-
-# dCdw = lambda: dadw * dCda()
 
 def dCdw():
     """
@@ -35,18 +33,11 @@ def dCdw():
 
     return wMultiple, slopeBias
 
-# print(
-#     f"i:{i} \n" + 
-#     f"w:{round(w,3)} \n" + 
-#     f"y:{y} \n" + 
-#     f"a:{round(a(),3)} \n" + 
-#     f"C:{round(C(),3)} \n"
-# )
-
 plotW = []
 plotC = []
 
-for _ in range(15):
+loopCount = max(50, int(1.25 / learningRate))
+for _ in range(loopCount):
 
     wMultiple, slopeBias = dCdw()
     # print(f"{wMultiple, slopeBias}")
@@ -56,16 +47,9 @@ for _ in range(15):
     plotW.append(w)
     plotC.append(C())
 
-# print(
-#     f"i:{i} \n" + 
-#     f"w:{round(w,3)} \n" + 
-#     f"y:{y} \n" + 
-#     f"a:{round(a(),3)} \n" + 
-#     f"C:{round(C(),3)} \n"
-# )
-
 fig, axes = plt.subplots(2)
 fig.tight_layout()
+fig.canvas.set_window_title(f"Learning Rate:{learningRate}, Ideal Weight:{round(y/i,2)}, Final Weight:{round(plotW[-1],2)}")
 
 axes[0].set_title("Weight / time")
 axes[0].plot(plotW)
