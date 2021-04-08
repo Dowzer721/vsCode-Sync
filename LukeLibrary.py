@@ -6,6 +6,8 @@ sys.path.append("C:\\Users\\Luke\\Documents\\Learning Python\\")
 import LukeLibrary as LL
 """
 
+from copy import copy
+
 import math
 
 import pygame
@@ -285,35 +287,22 @@ def smooth2DNoise(noiseArr, noiseScale=0.1, neighbourLayerCount=1, edgeLoop=Fals
     noiseWidth = len(noiseArr[0])
     noiseHeight= len(noiseArr)
 
-    for y in range(noiseHeight):
-        for x in range(noiseWidth):
-            if (neighbourLayerCount == 1):
-                if edgeLoop:
-                    xPrev = (x + noiseWidth  - 1) % noiseWidth
-                    yPrev = (y + noiseHeight - 1) % noiseHeight
-                    xNext = (x + 1) % noiseWidth
-                    yNext = (y + 1) % noiseHeight
-                else:
-                    xPrev = max(0, x-1)
-                    yPrev = max(0, y-1)
-                    xNext = min(x+1, noiseWidth -1)
-                    yNext = min(y+1, noiseHeight-1)
-                
-                neighbours = [
-                    noiseArr[yPrev][xPrev], noiseArr[yPrev][x], noiseArr[yPrev][xNext],
-                    noiseArr[y][xPrev], noiseArr[y][xNext],
-                    noiseArr[yNext][xPrev], noiseArr[yNext][x], noiseArr[yNext][xNext]
-                ]
+    smoothedNoise = copy(noiseArr)
 
-                neighbourDifference = [
-                    (neighbours[i] - noiseArr[y][x]) for i in range(8)
-                ]
+    for yc in range(noiseHeight):
+        yp = y-1
+        yn = (y+1)%noiseHeight
+        for xc in range(noiseWidth):
+            xp = x-1
+            xn = (x+1)%noiseWidth
 
-                neighbourDifferenceSum = sum(neighbourDifference)
-                neighbourDifferenceSum /= 8.0
-                # neighbourDifferenceSum /= max(len([i for i in neighbourDifference if i > 0]), 1)
-
-                noiseArr[y][x] += (neighbourDifferenceSum * noiseScale)
+            smoothedNoise[yc][xc] = sum([
+                noiseArr[yp][xp], noiseArr[yp][xc], noiseArr[yp][xn],
+                noiseArr[yc][xp], noiseArr[yc][xc], noiseArr[yc][xn],
+                noiseArr[yn][xp], noiseArr[yn][xc], noiseArr[yn][xn]
+            ]) / 9.0
+    
+    return smoothedNoise
 
 def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, smoothEdgeLoop=False):
 
@@ -329,7 +318,7 @@ def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smoo
 
     if smooth:
         for _ in range(smoothCount):
-            smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
+            noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
     
     return noise
 
