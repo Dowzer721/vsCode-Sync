@@ -274,7 +274,7 @@ def generate1DNoise(noiseLength, noiseScale=0.1, precisionDP=3, smooth=True, smo
     if smoothCount==-1:
         smoothCount = int(noiseLength * 1.5)
 
-    noise = [randomFloat(precision=precisionDP) for _ in range(noiseLength)]
+    noise = [randomFloat(decimalPlaces_=precisionDP) for _ in range(noiseLength)]
     
     if smooth:
         for _ in range(smoothCount):
@@ -312,7 +312,7 @@ def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smoo
         smoothCount = int(noiseHyp * 1.5)
     
     noise = [
-        [randomFloat(precision=precisionDP) for _ in range(noiseWidth)]
+        [randomFloat(decimalPlaces_=precisionDP) for _ in range(noiseWidth)]
         for _ in range(noiseHeight)
     ]
 
