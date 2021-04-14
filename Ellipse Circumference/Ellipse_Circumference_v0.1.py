@@ -1,20 +1,26 @@
 
+# Check against:
+# https://www.google.com/search?q=circumference+of+an+ellipse
+
 import pygame
 import math
 import time
 
 pygame.display.init()
 
-screenW = 500
-screenH = 400
+screenW = 600
+screenH = 500
 screen = pygame.display.set_mode((screenW, screenH))
 
 closingTime = 5
 
 ellipseW = int(screenW * 0.8)
-ellipseH = int(screenH * 0.6)
+ellipseH = int(screenH * 0.7)
 
-segmentCount = 8 # The higher this number, the longer the process will take, but the more accurate it will be.
+# if ellipseW==ellipseH:
+#     print(2.0 * math.pi * ellipseW * 0.5)
+
+segmentCount = 10**5 # The higher this number, the longer the process will take, but the more accurate it will be.
 
 # while(True):
 screen.fill((255, 255, 255))
@@ -62,6 +68,10 @@ for i in range(0, segmentCount):
 pygame.display.flip()
 
 
-print("Using %d segments, estimated circumference = %.*f. \nClosing in %d seconds..." %(segmentCount, int(math.log10(segmentCount)), totalDist, closingTime) )
+print(
+    f"Using {segmentCount} segments, " +
+    f"estimated circumference = {round(totalDist, 5)}. \n" +
+    f"Closing in {closingTime} seconds..."
+)
 
 time.sleep(closingTime)
