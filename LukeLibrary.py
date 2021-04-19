@@ -251,9 +251,13 @@ def listTrim(list, startIndex, endIndex):
     
     # return trimmedList
 
-def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True):
+def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True, feedback_=False):
     noiseLength = len(noiseArr)
-    for curr in range(noiseLength):
+    
+    # pbar = progressbar.ProgressBar()
+    # for curr in pbar(range(noiseLength)) if feedback_ else range(noiseLength):
+    
+    for curr in progressbar.ProgressBar()(range(noiseLength)) if feedback_ else range(noiseLength):
         if edgeLoop:
             prev = (curr + noiseLength - 1) % noiseLength
             next = (curr + 1) % noiseLength
@@ -271,7 +275,7 @@ def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True):
     # for c in range(noiseLength):
     #     noiseArr[c] = (noiseArr[c] - minNoise) / maxMinDiff
 
-def generate1DNoise(noiseLength, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, edgeLoop=True):
+def generate1DNoise(noiseLength, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, edgeLoop=True, feedback_=False):
 
     if smoothCount==-1:
         smoothCount = int(noiseLength * 1.5)
@@ -279,24 +283,25 @@ def generate1DNoise(noiseLength, noiseScale=0.1, precisionDP=3, smooth=True, smo
     noise = [randomFloat(decimalPlaces_=precisionDP) for _ in range(noiseLength)]
     
     if smooth:
-        for _ in range(smoothCount):
+        for _ in progressbar.ProgressBar()(range(smoothCount)) if feedback_ else range(smoothCount):
             smooth1DNoise(noise, noiseScale, edgeLoop)
     
     return noise
 
-def smooth2DNoise(noiseArr, noiseScale=0.1, neighbourLayerCount=1, edgeLoop=False):
+def smooth2DNoise(noiseArr, noiseScale=0.1, neighbourLayerCount=1, edgeLoop=False, feedback_=False):
     
     noiseWidth = len(noiseArr[0])
     noiseHeight= len(noiseArr)
 
     smoothedNoise = copy(noiseArr)
 
-    for yc in range(noiseHeight):
+    for yc in progressbar.ProgressBar()(range(noiseHeight)) if feedback_ else range(noiseHeight):
+    # for yc in range(noiseHeight):
         yp = yc-1
-        yn = (yc+1)%noiseHeight
+        yn = (yc+1) % noiseHeight
         for xc in range(noiseWidth):
             xp = xc-1
-            xn = (xc+1)%noiseWidth
+            xn = (xc+1) % noiseWidth
 
             smoothedNoise[yc][xc] = sum([
                 noiseArr[yp][xp], noiseArr[yp][xc], noiseArr[yp][xn],
@@ -318,18 +323,14 @@ def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smoo
         for _ in range(noiseHeight)
     ]
 
-    pbar = progressbar.ProgressBar()
     if smooth:
-        if feedback_:
-            for _ in pbar(range(smoothCount)):
-                noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
-        else:
-            for _ in range(smoothCount):
-                noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
+        for _ in progressbar.ProgressBar()(range(smoothCount)) if feedback_ else range(smoothCount):
+            noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
     
     return noise
 
 def LineLineIntersection(lineAStart, lineAEnd, lineBStart, lineBEnd):
+
     x1 = lineAStart[0]
     y1 = lineAStart[1]
     x2 = lineAEnd[0]
@@ -355,3 +356,4 @@ def LineLineIntersection(lineAStart, lineAEnd, lineBStart, lineBEnd):
         return (x, y)
     
     return -1
+
