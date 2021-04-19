@@ -14,6 +14,8 @@ import pygame
 # pygame.init()
 pygame.display.init()
 
+import progressbar
+
 import random
 import time
 
@@ -290,11 +292,11 @@ def smooth2DNoise(noiseArr, noiseScale=0.1, neighbourLayerCount=1, edgeLoop=Fals
     smoothedNoise = copy(noiseArr)
 
     for yc in range(noiseHeight):
-        yp = y-1
-        yn = (y+1)%noiseHeight
+        yp = yc-1
+        yn = (yc+1)%noiseHeight
         for xc in range(noiseWidth):
-            xp = x-1
-            xn = (x+1)%noiseWidth
+            xp = xc-1
+            xn = (xc+1)%noiseWidth
 
             smoothedNoise[yc][xc] = sum([
                 noiseArr[yp][xp], noiseArr[yp][xc], noiseArr[yp][xn],
@@ -304,7 +306,7 @@ def smooth2DNoise(noiseArr, noiseScale=0.1, neighbourLayerCount=1, edgeLoop=Fals
     
     return smoothedNoise
 
-def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, smoothEdgeLoop=False):
+def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, smoothEdgeLoop=False, feedback_=False):
 
 
     if smoothCount==-1:
@@ -316,9 +318,14 @@ def generate2DNoise(noiseWidth, noiseHeight, noiseScale=0.1, precisionDP=3, smoo
         for _ in range(noiseHeight)
     ]
 
+    pbar = progressbar.ProgressBar()
     if smooth:
-        for _ in range(smoothCount):
-            noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
+        if feedback_:
+            for _ in pbar(range(smoothCount)):
+                noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
+        else:
+            for _ in range(smoothCount):
+                noise = smooth2DNoise(noise, noiseScale, edgeLoop=smoothEdgeLoop)
     
     return noise
 
