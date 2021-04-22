@@ -47,28 +47,115 @@ for pt in points:
 
 # points[lowestXID].connectToPoint(points[lowestXID+1%pointCount])
 
-currentID = lowestXID
-currentAngle = pi / 2.0
-anglesToAllOtherPoints = []
-#     atan2((points[i].position[1]-points[currentID].position[1]))
-for i in range(pointCount):
-    if i == currentID: continue
+# currentID = lowestXID
+# currentAngle = 3 * pi / 2.0
 
-    dx = points[i].position[0] - points[currentID].position[0]
-    dy = points[i].position[1] - points[currentID].position[1]
-    angle = atan2(dy, dx)
-    anglesToAllOtherPoints.append(angle)
+# screen.fill((255, 255, 255))
+# for _ in range(10):
 
-"""
-Next I want to find the difference in angle between "currentAngle" and each of the list angles, 
-and then whichever difference is lowest is the angle leading to the next point around the convex hull
-"""
+#     anglesToAllOtherPoints = []
+#     #     atan2((points[i].position[1]-points[currentID].position[1]))
+#     for i in range(pointCount):
+#         if i == currentID: continue
 
+#         dx = points[i].position[0] - points[currentID].position[0]
+#         dy = points[i].position[1] - points[currentID].position[1]
+#         # dx = points[currentID].position[0] - points[i].position[0]
+#         # dy = points[currentID].position[1] - points[i].position[1]
+#         angle = atan2(dy, dx)
+#         anglesToAllOtherPoints.append(angle)
 
-while(True):
-    screen.fill((255, 255, 255))
+#     """
+#     Next I want to find the difference in angle between "currentAngle" and each of the list angles, 
+#     and then whichever difference is lowest is the angle leading to the next point around the convex hull
+#     """
 
+#     angleDifferences = [
+#         (anglesToAllOtherPoints[i] - currentAngle) 
+#         for i in range(pointCount-1)
+#     ]
+
+#     minDifference = min(angleDifferences)
+
+#     minDifferenceID = angleDifferences.index(minDifference)
+
+#     # print(anglesToAllOtherPoints)
+#     # print(angleDifferences)
+#     # print(minDifference)
+#     # print(minDifferenceID)
+
+#     x1 = int(points[currentID].position[0])
+#     y1 = int(points[currentID].position[1])
+#     x2 = int(points[minDifferenceID].position[0])
+#     y2 = int(points[minDifferenceID].position[1])
+    
+#     pygame.draw.line(
+#         screen, (0, 0, 0),
+#         (x1, y1), (x2, y2),
+#         1
+#     )
+
+    
+    
+#     dx = points[minDifferenceID].position[0] - points[currentID].position[0]
+#     dy = points[minDifferenceID].position[1] - points[currentID].position[1]
+#     # dx = points[currentID].position[0] - points[minDifferenceID].position[0]
+#     # dy = points[currentID].position[1] - points[minDifferenceID].position[1]
+#     currentAngle = atan2(dy, dx)
+#     currentID = minDifferenceID
+
+averageX = sum(pt.position[0] for pt in points) / float(pointCount)
+averageY = sum(pt.position[1] for pt in points) / float(pointCount)
+
+pygame.draw.circle(
+    screen, (0, 255, 0),
+    (int(averageX), int(averageY)), 8,
+    0
+)
+
+vertexCount = 64
+vertexList = []
+for c in range(vertexCount):
+    n = (c + 1) % vertexCount
+    thetaC = (2.0 * pi / vertexCount) * c
+    thetaN = (2.0 * pi / vertexCount) * n
+
+    maxDist = -1
+    maxDistID = 0
     for pt in points:
-        pt.render()
+        dx = averageX - pt.position[0]
+        dy = averageY - pt.position[1]
+        angleToPoint = atan2(dy, dx)
+        if (angleToPoint > thetaC) and (angleToPoint < thetaN):
+            dist = ((dx**2) + (dy**2)) ** 0.5
+            if dist > maxDist:
+                maxDist = dist
+                maxDistID = pt.id
+    
+    vertexList.append(points[maxDistID])
 
-    pygame.display.flip()
+for c in range(len(vertexList)):
+    n = (c + 1) % vertexCount
+
+    x1 = vertexList[c].position[0]
+    y1 = vertexList[c].position[1]
+    x2 = vertexList[n].position[0]
+    y2 = vertexList[n].position[1]
+
+    pygame.draw.line(
+        screen, (0, 0, 255),
+        (x1, y1), (x2, y2),
+        1
+    )
+
+
+
+
+# while(True):
+
+for pt in points:
+    pt.render()
+
+pygame.display.flip()
+
+input()
