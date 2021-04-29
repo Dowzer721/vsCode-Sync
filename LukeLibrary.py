@@ -117,8 +117,8 @@ class Sensor:
     def update(self, pos, dir):
         self.position.set(pos.x, pos.y)
         self.direction = dir
-    def measure(self, screen, wallList):
-        cIPD = screen.get_width() * screen.get_height()
+    def measure(self, wallList):
+        cIPD = float("inf")# screen.get_width() * screen.get_height()
         
         x1 = self.position.x
         y1 = self.position.y
@@ -144,7 +144,7 @@ class Sensor:
                 dist = self.position.distance(Vector(x, y))
                 cIPD = min(cIPD, dist)
         
-        if cIPD == screen.get_width() * screen.get_height():
+        if cIPD == float("inf"): #screen.get_width() * screen.get_height():
             self.measuredDistance = -1
         else:
             self.measuredDistance = cIPD
@@ -251,7 +251,7 @@ def listTrim(list, startIndex, endIndex):
     
     # return trimmedList
 
-def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True, feedback_=False):
+def smooth1DNoise(noiseArr, edgeLoop=True, feedback_=False):
     noiseLength = len(noiseArr)
     
     # pbar = progressbar.ProgressBar()
@@ -267,7 +267,7 @@ def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True, feedback_=False):
         prevDiff = noiseArr[prev] - noiseArr[curr]
         nextDiff = noiseArr[next] - noiseArr[curr]
         diffSum  = prevDiff + nextDiff
-        noiseArr[curr] += (diffSum * noiseScale)
+        noiseArr[curr] += diffSum
     
     # minNoise = min(noiseArr)
     # maxNoise = max(noiseArr)
@@ -275,16 +275,16 @@ def smooth1DNoise(noiseArr, noiseScale=0.1, edgeLoop=True, feedback_=False):
     # for c in range(noiseLength):
     #     noiseArr[c] = (noiseArr[c] - minNoise) / maxMinDiff
 
-def generate1DNoise(noiseLength, noiseScale=0.1, precisionDP=3, smooth=True, smoothCount=-1, edgeLoop=True, feedback_=False):
+def generate1DNoise(noiseLength, noiseScale=0.1, noiseMin=0.0, noiseMax=1.0, precisionDP=3, smooth=True, smoothCount=-1, edgeLoop=True, feedback_=False):
 
     if smoothCount==-1:
         smoothCount = int(noiseLength * 1.5)
 
-    noise = [randomFloat(decimalPlaces_=precisionDP) for _ in range(noiseLength)]
+    noise = [randomFloat(noiseMin, noiseMax, precisionDP) * noiseScale for _ in range(noiseLength)]
     
     if smooth:
         for _ in progressbar.ProgressBar()(range(smoothCount)) if feedback_ else range(smoothCount):
-            smooth1DNoise(noise, noiseScale, edgeLoop)
+            smooth1DNoise(noise, edgeLoop=edgeLoop)
     
     return noise
 
