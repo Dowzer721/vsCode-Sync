@@ -37,6 +37,22 @@ class Vector:
         
     def copy(self):
         return Vector(self.x, self.y)
+    
+    @staticmethod
+    def sum(vectorList, findAverage=False):
+        returnVector = Vector(0, 0, 0)
+        for vec in vectorList:
+            returnVector.x += vec.x
+            returnVector.y += vec.y
+            if vec.z != None:
+                returnVector.z += vec.z
+
+        if findAverage:
+            returnVector.x /= len(vectorList)
+            returnVector.y /= len(vectorList)
+            returnVector.z /= len(vectorList)
+
+        return returnVector
 
     # --- Manipulate current Vector:
     def add(self, vec):
@@ -179,7 +195,7 @@ def randomFloat(min_ = 0.0, max_ = 1.0, decimalPlaces_ = 3):
     max_ = max(min_, max_)
     
     rng = max_ - min_
-    random.seed(time.time())
+    # random.seed(time.time())
     pct = random.randint(0, 10**decimalPlaces_) / float(10**decimalPlaces_)
     return float(round(min_ + (rng * pct), decimalPlaces_))
 
