@@ -166,7 +166,7 @@ class Sensor:
             self.measuredDistance = cIPD
         
         return self.measuredDistance
-    def display(self, screen, colour=(255, 100, 100), thickness=1):
+    def render(self, screen, colour=(255, 100, 100), thickness=1):
         # This function may not work, as it requires a pygame.Surface to be provided, and this may cause looping errors.
         
         x1 = int(self.position.x)
