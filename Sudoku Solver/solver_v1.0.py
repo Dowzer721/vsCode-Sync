@@ -22,9 +22,6 @@
 #o---o---o---o---o---o---o---o---o---o
 
 
-
-
-from os import system
 from time import time
 
 # def delay(secs):
