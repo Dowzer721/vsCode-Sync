@@ -145,6 +145,8 @@ def generate(colCount, rowCount, startingLocation = -1, renderScreen=-1, renderO
 
         # Push the current location to the stack:
         stack.append(currentIndex)
+
+        print(f"{round(visitedCount * 100 / (mazeSize-1))}%")
     
     # Make sure that all external walls are present:
     topRowIndexes = []
@@ -170,20 +172,20 @@ def generate(colCount, rowCount, startingLocation = -1, renderScreen=-1, renderO
     
     return Grid
 
-# col,row = 50,50
+col,row = 25, 25
 
-# screenW = 500
-# screenH = int(screenW * (row/col))
-# screen = pygame.display.set_mode((screenW, screenH))
+screenW = 500
+screenH = int(screenW * (row/col))
+screen = pygame.display.set_mode((screenW, screenH))
 
 # generate(colCount, rowCount, startingLocation = -1, renderScreen=-1)
-# maze = generate(col, row, (0,0))
+maze = generate(col, row, (0,0), screen)
 
-# screen.fill((255, 255, 255))
+while True:
+    screen.fill((255, 255, 255))
 
-# for cell in maze:
-#     cell.render()
+    for cell in maze:
+        cell.render(screen)
 
-# pygame.display.flip()
+    pygame.display.flip()
 
-# input()

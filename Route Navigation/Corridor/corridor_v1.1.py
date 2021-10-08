@@ -213,7 +213,7 @@ class Robot:
         )
 
         for sensor in self.sensors:
-            sensor.display(screen, thickness=outlineThickness)
+            sensor.render(screen, thickness=outlineThickness)
         
 robot = Robot(0.0)
 

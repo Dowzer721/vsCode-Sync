@@ -288,7 +288,8 @@ class Vehicle:
             self.sensors[i].direction = theta
             
             # self.sensors[i].measure(self.id, Boundaries)
-            self.sensors[i].measure(screen, Boundaries)
+            # self.sensors[i].measure(screen, Boundaries)
+            self.sensors[i].measure(Boundaries)
 
     def updateBodyBoundaries(self):
         for c in range(bodyBoundaryCount):
@@ -376,7 +377,7 @@ class Vehicle:
 
         if showSensors:
             for s in self.sensors:
-                s.display(screen)
+                s.render(screen)
     
     def update(self):
         self.updateSensors()
@@ -405,10 +406,11 @@ def findClosestWallPositionToVehicle(id=0):
     midToVehicleSensor.position.set(screenW / 2, screenH / 2)
     midToVehicleSensor.direction = theta
 
-    midToVehicleSensor.measure(screen, Boundaries)
+    # midToVehicleSensor.measure(screen, Boundaries)
+    midToVehicleSensor.measure(Boundaries)
     if showSensors:
         # midToVehicleSensor.display((0, 255, 0), -1)
-        midToVehicleSensor.display(screen, (0, 255, 0), 1)
+        midToVehicleSensor.render(screen, (0, 255, 0), 1)
 
 #region Main Simulation Loop
 startTime = time.time()

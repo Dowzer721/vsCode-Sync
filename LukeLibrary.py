@@ -16,7 +16,8 @@ pygame.display.init()
 
 import progressbar
 
-import random
+# import random
+from random import randint
 import time
 
 class Vector:
@@ -64,6 +65,9 @@ class Vector:
     def mult(self, val):
         self.x *= val
         self.y *= val
+    def div(self, val):
+        self.x /= val
+        self.y /= val
     def limit(self, min_ = 0.0, max_ = 1.0):
         # newMag = max(min_, min(self.getMag(), max_))
         # self.setMag(newMag)
@@ -100,6 +104,11 @@ class Vector:
         hdg = self.heading()
         newHdg = hdg + randomFloat(-amount, amount)
         self.rotateToAngle(newHdg)
+    def addAngle(self, angle):
+        newHeading = self.heading() + angle
+        mag = self.getMag()
+        self.x = math.cos(newHeading) * mag
+        self.y = math.sin(newHeading) * mag
 
     # --- Return scalar:
     def distance(self, vec):
@@ -124,6 +133,11 @@ class Vector:
     # --- Return manipulated self values:
     def toInt(self):
         return (int(self.x), int(self.y), 0 if self.z == None else int(self.z))
+
+class Wall:
+    def __init__(self, x1, y1, x2, y2):
+        self.start = Vector(x1, y1)
+        self.end = Vector(x2, y2)
 
 class Sensor:
     def __init__(self):
@@ -196,7 +210,7 @@ def randomFloat(min_ = 0.0, max_ = 1.0, decimalPlaces_ = 3):
     
     rng = max_ - min_
     # random.seed(time.time())
-    pct = random.randint(0, 10**decimalPlaces_) / float(10**decimalPlaces_)
+    pct = randint(0, 10**decimalPlaces_) / float(10**decimalPlaces_)
     return float(round(min_ + (rng * pct), decimalPlaces_))
 
 def mapToRange(input, inputMin=-1.0, inputMax=1.0, outputMin=0.0, outputMax=1.0):

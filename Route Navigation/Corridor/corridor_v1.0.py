@@ -154,7 +154,8 @@ class Vehicle:
 
         for sensor in self.sensors:
             #display(self, screen, colour=(255, 100, 100), thickness=1):
-            sensor.display(screen)
+            sensor.render(screen)
+            
 startPosition = LL.Vector(screenW*0.2, screenH*0.5)
 startDirection= LL.randomFloat(-pi*0.1, pi*0.1)
 robot = Vehicle(startPosition, startDirection)
