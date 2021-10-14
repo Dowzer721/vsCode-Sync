@@ -1,0 +1,7 @@
+
+"couldn't find a debug adapter descriptor for debug type python"
+- Go to extensions
+- Find python
+- Arrow beside uninstall
+- Install another version
+- Type 2020.10.332292344 into box

@@ -30,14 +30,20 @@ board = [
     [0,0,0,9,0,8,5,0,0]
 ]
 
+boardH, boardW = len(board), len(board[0])
+
 regionPositions = [[] for _ in range(9)]
 def calculateRegion(r_, c_):
     # r_: row
     # c_: column
-    return int(c_ / 3) + (int(r_ / 3) * 3)
+    # return int(c_ / 3) + (int(r_ / 3) * 3)
+    
+    srW = int(boardW ** 0.5)
+    srH = int(boardH ** 0.5)
+    return int(c_ / srW) + (int(r_ / srH) * srW)
 
-for r in range(9):
-    for c in range(9):
+for r in range(boardH):
+    for c in range(boardW):
         regionPositions[ calculateRegion(r, c) ].append((r, c))
 
 def valid(r_, c_, n_):
@@ -49,7 +55,7 @@ def valid(r_, c_, n_):
     rowPens = [pen for pen in board[r_] if pen > 0]
 
     # The pens in the current column, excluding all the zeroes:
-    columnPens = [board[i][c_] for i in range(9) if board[i][c_] > 0]
+    columnPens = [board[i][c_] for i in range(boardH) if board[i][c_] > 0]
 
     # The pens in the current region, excluding all the zeroes:
     regionPens = [ board[r][c] for r, c in regionPositions[calculateRegion(r_, c_)] if board[r][c] > 0 ]
@@ -65,8 +71,8 @@ def valid(r_, c_, n_):
 def solve():
     global board
 
-    for r in range(9):
-        for c in range(9):
+    for r in range(boardH):
+        for c in range(boardW):
             if board[r][c] == 0:
                 for n in range(1, 10):
                     if valid(r, c, n):
@@ -85,9 +91,9 @@ def solve():
 solve()
 
 print("_ "*12)
-for r in range(9):
+for r in range(boardH):
     row = ""
-    for c in range(9):
+    for c in range(boardW):
         if board[r][c] > 0:
             row += str(board[r][c]) + ' '
         else:
@@ -119,7 +125,7 @@ for r in range(9):
 
 # Check all of the rows are valid:
 rowsValid = columnsValid = regionsValid = True
-for row in range(9):
+for row in range(boardH):
     rowPens = board[row]
     numberCounts = [ rowPens.count(i) for i in range(1, 10) ]
     if numberCounts != [1 for _ in range(9)]:
@@ -127,7 +133,7 @@ for row in range(9):
         break
 
 # Check all of the columns are valid:
-for col in range(9):
+for col in range(boardW):
     colPens = [board[i][col] for i in range(9)]
     numberCounts = [ colPens.count(i) for i in range(1, 10) ]
     if numberCounts != [1 for _ in range(9)]:
