@@ -17,8 +17,9 @@ pygame.display.init()
 import progressbar
 
 # import random
-from random import randint
+from random import seed, randint
 import time
+
 
 class Vector:
     # --- Initialisation:
@@ -204,7 +205,9 @@ class Sensor:
             thickness
         )
 
-def randomFloat(min_ = 0.0, max_ = 1.0, decimalPlaces_ = 3):
+def randomFloat(min_ = 0.0, max_ = 1.0, decimalPlaces_ = 3, seed_ = None):
+    if seed_ != None: seed(seed_)
+    
     min_ = min(min_, max_)
     max_ = max(min_, max_)
     
@@ -260,10 +263,8 @@ def degreesToRadians(d):
 def sign(val):
     if val == 0:
         return 0
-    if val < 0:
-        return -1
     
-    return 1
+    return (int(val > 0) * 2) - 1
 
 def listTrim(list, startIndex, endIndex):
     return list[startIndex:endIndex]
@@ -305,16 +306,25 @@ def smooth1DNoise(noiseArr, edgeLoop=True, feedback_=False):
     # for c in range(noiseLength):
     #     noiseArr[c] = (noiseArr[c] - minNoise) / maxMinDiff
 
-def generate1DNoise(noiseLength, noiseScale=0.1, noiseMin=0.0, noiseMax=1.0, precisionDP=3, smooth=True, smoothCount=-1, edgeLoop=True, feedback_=False):
+def generate1DNoise(noiseLength_, noiseScale_=0.1, noiseMin_=0.0, noiseMax_=1.0, precisionDP_=3, smooth_=True, smoothCount_=-1, edgeLoop_=True, feedback_=False, centerNoise_=None, seedForRandom_=None):
 
-    if smoothCount==-1:
-        smoothCount = int(noiseLength * 1.5)
+    if smoothCount_==-1:
+        smoothCount_ = int(noiseLength_ * 1.5)
+    # else:
+    #     smoothCount_ = int(noiseLength_ * smoothCount_)
 
-    noise = [randomFloat(noiseMin, noiseMax, precisionDP) * noiseScale for _ in range(noiseLength)]
+    noise = [randomFloat(noiseMin_, noiseMax_, precisionDP_, seed_=seedForRandom_) * noiseScale_ for _ in range(noiseLength_)]
     
-    if smooth:
-        for _ in progressbar.ProgressBar()(range(smoothCount)) if feedback_ else range(smoothCount):
-            smooth1DNoise(noise, edgeLoop=edgeLoop)
+    if smooth_:
+        for _ in progressbar.ProgressBar()(range(smoothCount_)) if feedback_ else range(smoothCount_):
+            smooth1DNoise(noise, edgeLoop=edgeLoop_)
+
+    if centerNoise_ != None:
+        avgNoiseValue = sum(noise) / noiseLength_
+        diffFromCenter = avgNoiseValue - centerNoise_
+        for n in range(noiseLength_):
+            noise[n] -= diffFromCenter
+        
     
     return noise
 
@@ -387,3 +397,41 @@ def LineLineIntersection(lineAStart, lineAEnd, lineBStart, lineBEnd):
     
     return -1
 
+def intToBinaryList(val, desiredListLength_=None):
+
+    
+    if desiredListLength_ == None:
+        listLength = math.ceil(math.log2(val+1))
+    else:
+        listLength = desiredListLength_
+    
+    # Consider using bit-shifting here for efficiency
+    
+    ret = [0 for _ in range(int(listLength))]
+    # print(f"val:{val}, len:{listLength}, list:{ret}")
+    for i in range(listLength-1, -1, -1):
+        if val >= (2 ** i):
+            val -= (2 ** i)
+            ret[i] = 1
+    
+    # print(f"val:{val}, ret:{ret}")
+    return ret
+
+def binaryListToInt(list_): # [0, 1, 0, 1, 1, 1] = 23
+    # listLength = len(list_) # = 6
+
+    # total = 0
+    # for i in range(listLength-1, -1, -1): # 5, 4, 3, 2, 1, 0
+    #     powerOfTwo = 2 ** (listLength-1 - i) # (2**0), (2**1), (2**3), ...
+    #     total += powerOfTwo * list_[i]
+    
+    # return total
+
+    return sum([ (2**(len(list_)-1 -i)) * list_[i] for i in range(len(list_)-1, -1, -1) ])
+
+# print(binaryListToInt([0, 1, 0, 1, 1, 1]), ":23")
+# print(binaryListToInt([1, 0, 1, 1]), ":11")
+
+# This is the same as my "mapToRange()" method:
+# def LinearInterpolation(x1, y1, x2, y2, x_):
+    # return y1 + ((x_-x1) * (y2-y1))/(x2-x1)
