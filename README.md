@@ -6,5 +6,3 @@ I have set up Visual Studio Code to sync any changes I make to my local files wi
 [Formatting Link](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 
 [Online VSCode](https://gitpod.io/#https://github.com/Dowzer721/vsCode-Sync)
-
-edit0
