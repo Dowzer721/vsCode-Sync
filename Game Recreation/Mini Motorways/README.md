@@ -1,7 +1,7 @@
 
 # Mini Motorways-
 ## Developer: Dinosaur Polo Club
-## Release Date: 19/09/19 iOS; 20/07,21 macOS, Windows.
+## Release Date: 19/09/19 iOS; 20/07/21 macOS, Windows.
 ## Link: [dinopoloclub.com](https://dinopoloclub.com/games/mini-motorways/)
 
 -----

@@ -4,6 +4,13 @@
 import sys
 sys.path.append("C:\\Users\\Luke\\Documents\\Learning Python\\")
 import LukeLibrary as LL
+
+
+Fold all sections:
+Ctrl+K, Ctrl+ZERO
+Unfold all sections:
+Ctrl+K, Ctrl+J
+
 """
 
 from copy import copy
@@ -39,7 +46,7 @@ class Vector:
         
     def copy(self):
         return Vector(self.x, self.y)
-    
+
     @staticmethod
     def sum(vectorList, findAverage=False):
         returnVector = Vector(0, 0, 0)
@@ -55,6 +62,15 @@ class Vector:
             returnVector.z /= len(vectorList)
 
         return returnVector
+    
+    @staticmethod
+    def fromTuple(tuple_):
+        if len(tuple_) == 2:
+            x, y = tuple_
+            return Vector(x, y)
+        elif len(tuple_) == 3:
+            x, y, z = tuple_
+            return Vector(x, y, z)
 
     # --- Manipulate current Vector:
     def add(self, vec):
@@ -96,11 +112,6 @@ class Vector:
         self.y = newY
         if (self.z != None) and (newZ != None):
             self.z = newZ
-    # def set(self, newVec):
-    #     self.x = newVec.x
-    #     self.y = newVec.y
-    #     if self.z != None:
-    #         self.z = newVec.z
     def randomRotation(self, amount=0.1):
         hdg = self.heading()
         newHdg = hdg + randomFloat(-amount, amount)
@@ -110,6 +121,9 @@ class Vector:
         mag = self.getMag()
         self.x = math.cos(newHeading) * mag
         self.y = math.sin(newHeading) * mag
+    def moveInDirection(self, angle, dist = 1.0):
+        self.x += math.cos(angle) * dist
+        self.y += math.sin(angle) * dist
 
     # --- Return scalar:
     def distance(self, vec):
@@ -134,6 +148,27 @@ class Vector:
     # --- Return manipulated self values:
     def toInt(self):
         return (int(self.x), int(self.y), 0 if self.z == None else int(self.z))
+    def toScalar(self):
+        if self.z == None:
+            return (self.x, self.y)
+        else:
+            return (self.x, self.y, self.z)
+
+    # --- Showing vector information:
+    def render(self, startPosition, canvas, scale=1, colour=(255, 0, 255), thickness=4):
+        
+        if type(startPosition) is LL.Vector:
+            x1, y1, _ = startPosition.toInt()
+        elif type(startPosition) is tuple or type(startPosition) is list:
+            x1 = int(startPosition[0])
+            y1 = int(startPosition[1])
+
+        x2 = x1 + int(self.x * scale)
+        y2 = y1 + int(self.y * scale)
+
+        pygame.draw.line(canvas, colour, (x1, y1), (x2, y2), thickness)
+    def print(self):
+        print(f"Vector: x={self.x}, y={self.y}, z={self.z}")
 
 class Wall:
     def __init__(self, x1, y1, x2, y2):
@@ -145,7 +180,7 @@ class Sensor:
         self.position = Vector()
         self.direction = 0.0
         self.measuredDistance = -1.0 #pygame.Surface.get_width() * pygame.Surface.get_height()
-    def update(self, pos, dir):
+    def update(self, pos, dir = 0.0):
         self.position.set(pos.x, pos.y)
         self.direction = dir
     def measure(self, wallList):
@@ -434,4 +469,29 @@ def binaryListToInt(list_): # [0, 1, 0, 1, 1, 1] = 23
 
 # This is the same as my "mapToRange()" method:
 # def LinearInterpolation(x1, y1, x2, y2, x_):
+
     # return y1 + ((x_-x1) * (y2-y1))/(x2-x1)
+
+
+def LineCoefficientsFromTwoPoints(A, B):
+    
+    # x1, x2 = A[0], B[0]
+    # y1, y2 = A[1], B[1]
+
+    # # y = mx + b
+    # m = (y2 - y1) / (x2 - x1)
+    # b = y1 - (m * x1)
+
+    # # mx - y + b = 0
+    # # Ax + By + C = 0
+
+    # # mx - y + b = Ax + By + C
+    
+    Ax, Ay = A
+    Bx, By = B
+
+    a = Ay - By
+    b = Bx - Ax
+    c = ((Ax-Bx)*Ay) + ((By-Ay)*Ax)
+
+    return a, b, c
