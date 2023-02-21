@@ -1,5 +1,5 @@
 
-N = 8
+N = 6
 
 grid = [
     [0 for _ in range(N)] for _ in range(N)

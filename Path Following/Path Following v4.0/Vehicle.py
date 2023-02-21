@@ -30,7 +30,7 @@ class Vehicle:
         # )
 
         vectorToFuturePoint = LL.Vector(Fx-currentPath.start[0], Fy-currentPath.start[1])
-        angleBetweenVectors = vectorToFuturePoint.angleBetween(currentPath.startToEndVector)
+        angleBetweenVectors = vectorToFuturePoint.angleBetween(currentPath.startToEndVector) + hdg
 
         normalisedPathVector = copy(currentPath.startToEndVector)
         normalisedPathVector.normalise()
