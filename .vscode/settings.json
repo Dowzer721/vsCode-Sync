@@ -1,2 +1,5 @@
 {
+    "editor.inlineSuggest.enabled": false,
+    "editor.snippetSuggestions": "none",
+    "editor.suggest.showInlineDetails": false
 }
