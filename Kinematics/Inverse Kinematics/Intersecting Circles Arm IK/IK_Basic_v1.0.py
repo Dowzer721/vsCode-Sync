@@ -6,10 +6,10 @@ import pygame
 canvasW, canvasH = 400, 600
 canvas = pygame.display.set_mode((canvasW, canvasH))
 
-baseLocation = (canvasW*0.5, canvasH*0.9)
+baseLocation = (canvasW*0.25, canvasH*1.0)
 
-armLength = canvasH * 1.2
-segmentCount = 10
+armLength = canvasH * 1.0
+segmentCount = 4
 segmentLength = armLength / segmentCount
 # print(segmentLength)
 jointMovementSpeed = 0.001
