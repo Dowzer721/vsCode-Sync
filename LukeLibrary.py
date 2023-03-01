@@ -432,6 +432,33 @@ def LineLineIntersection(lineAStart, lineAEnd, lineBStart, lineBEnd):
     
     return -1
 
+def closestPointOnLine(lineStart, lineEnd, point):
+    A, B, C = lineStart, lineEnd, point
+
+    AB_dx = A[0] - B[0]
+    AB_dy = A[1] - B[1]
+    AB_angle = math.atan2(AB_dy, AB_dx)
+
+    AC_dx = C[0] - A[0]
+    AC_dy = C[1] - A[1]
+    AC_dist = int( ((AC_dx**2)+(AC_dy**2))**0.5 )
+
+    BC_dx = C[0] - B[0]
+    BC_dy = C[1] - B[1]
+    BC_dist = int( ((BC_dx**2)+(BC_dy**2))**0.5 )
+    BC_angle = math.atan2(BC_dy, BC_dx)
+    # BC_toward = (int( B[0] + (cos(BC_angle) * BC_dist * 0.75) ), int( B[1] + (sin(BC_angle) * BC_dist * 0.75) ) )
+
+    AC_BC_angle_d = AB_angle - BC_angle
+    BC_flip = (int( B[0] + (math.cos(AB_angle + (AC_BC_angle_d)) * BC_dist ) ), int( B[1] + (math.sin(AB_angle + (AC_BC_angle_d)) * BC_dist) ))
+
+    C_closest = (
+        (C[0] + BC_flip[0]) // 2,
+        (C[1] + BC_flip[1]) // 2
+    )
+
+    return C_closest
+
 def intToBinaryList(val, desiredListLength_=None):
 
     
