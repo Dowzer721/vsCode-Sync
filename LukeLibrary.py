@@ -17,6 +17,8 @@ from copy import copy
 
 import math
 
+import numpy as np
+
 import pygame
 # pygame.init()
 pygame.display.init()
@@ -27,6 +29,26 @@ import progressbar
 from random import seed, randint
 import time
 
+colours = {
+    "BLACK":        (  0,   0,   0),
+    "WHITE":        (255, 255, 255),
+    "RED":          (255,   0,   0),
+    "GREEN":        (  0, 255,   0),
+    "BLUE":         (  0,   0, 255),
+    "YELLOW":       (255, 255,   0),
+    "CYAN":         (  0, 255, 255),
+    "MAGENTA":      (255,   0, 255),
+    "LIGHT GREY":   (200, 200, 200),
+    "DARK GREY":    ( 50,  50,  50),
+    
+    "AZURE":        (240, 255, 255),
+    "BRICK":        (178,  34,  34),
+    "CHOCOLATE":    (210, 105,  30),
+    "GOLD":         (255, 215,   0),
+    "MINT":         (245, 255, 250),
+    "SNOW":         (255, 250, 250)
+}
+    
 
 class Vector:
     # --- Initialisation:
@@ -72,6 +94,19 @@ class Vector:
             x, y, z = tuple_
             return Vector(x, y, z)
 
+    # @staticmethod
+    # def fromTo(from_, to_, normalise_=False):
+    #     dx = to_[0] - from_[0]
+    #     dy = to_[1] - from_[1]
+    #     if len(from_) < 3:
+    #         dz = 0
+    #     else:
+    #         dz = to_[2] - from_[2]
+
+    #     h = ((dx**2)+(dy**2))**0.5
+    #     if not normalise_: h = 1
+    #     return (dx/h, dy/h, dz/h), h
+    
     # --- Manipulate current Vector:
     def add(self, vec):
         self.x += vec.x
@@ -432,32 +467,161 @@ def LineLineIntersection(lineAStart, lineAEnd, lineBStart, lineBEnd):
     
     return -1
 
+def LineNormals(lineStart, lineEnd, normalPosition=0, normalise=False):
+    """
+    lineStart: tuple/list defining starting position (x, y).\n
+    lineEnd: tuple/list defining ending position (x, y).\n
+    normalPosition [optional]: 0/1/2 : Start, Middle, End\n
+    """
+
+    
+    
+    x1, y1 = np.ndarray.tolist(lineStart)
+    x2, y2 = np.ndarray.tolist(lineEnd)
+
+    dx = x2 - x1
+    dy = y2 - y1
+
+    normals = np.array([
+        [-dy,  dx],
+        [ dy, -dx]
+    ])
+
+    if normalise:
+        normals[0] /= np.linalg.norm(normals[0])
+        normals[1] /= np.linalg.norm(normals[1])
+    
+    return normals
+    #     numpyNormals = np.array(normals)
+
+    #     if np.linalg.norm(numpyNormals) != 0: 
+    #         numpyNormals = numpyNormals / np.linalg.norm(numpyNormals)
+        
+    #     normals = np.ndarray.tolist(numpyNormals)
+    
+    # # posX = x1 + ((dx/2) * normalPosition)
+    # # posY = y1 + ((dy/2) * normalPosition)
+
+    # # normals[0][0] += posX
+    # # normals[0][1] += posY
+    
+    # # normals[1][0] += posX
+    # # normals[1][1] += posY
+    
+    # return normals
+
 def closestPointOnLine(lineStart, lineEnd, point):
-    A, B, C = lineStart, lineEnd, point
 
-    AB_dx = A[0] - B[0]
-    AB_dy = A[1] - B[1]
-    AB_angle = math.atan2(AB_dy, AB_dx)
+    def dxdy(start, end):
+        return (
+            end[0] - start[0],
+            end[1] - start[1]
+        )
 
-    AC_dx = C[0] - A[0]
-    AC_dy = C[1] - A[1]
-    AC_dist = int( ((AC_dx**2)+(AC_dy**2))**0.5 )
+    def vectorFromTo(from_, to_, normalise_=1):
+        dx, dy = dxdy(from_, to_)
+        h = ((dx**2) + (dy**2)) ** 0.5
+        if normalise_ == 0:
+            h = 1
+        return [dx/h, dy/h]
 
-    BC_dx = C[0] - B[0]
-    BC_dy = C[1] - B[1]
-    BC_dist = int( ((BC_dx**2)+(BC_dy**2))**0.5 )
-    BC_angle = math.atan2(BC_dy, BC_dx)
-    # BC_toward = (int( B[0] + (cos(BC_angle) * BC_dist * 0.75) ), int( B[1] + (sin(BC_angle) * BC_dist * 0.75) ) )
+    def dot(A, B):
+        return (A[0] * B[0]) + (A[1] * B[1])
 
-    AC_BC_angle_d = AB_angle - BC_angle
-    BC_flip = (int( B[0] + (math.cos(AB_angle + (AC_BC_angle_d)) * BC_dist ) ), int( B[1] + (math.sin(AB_angle + (AC_BC_angle_d)) * BC_dist) ))
+    lineVector = vectorFromTo(lineStart, lineEnd)
+    px, py = point
+    pointVector = vectorFromTo(lineStart, (px, py), 0)
+    lmDot = dot(lineVector, pointVector)
 
-    C_closest = (
-        (C[0] + BC_flip[0]) // 2,
-        (C[1] + BC_flip[1]) // 2
-    )
+    dx, dy = dxdy(lineStart, lineEnd)
+    lineLength = ((dx**2) + (dy**2)) ** 0.5
+    lmDot = max(0, min(lmDot, lineLength))
 
-    return C_closest
+    cpX = lineStart[0] + (lineVector[0] * lmDot)
+    cpY = lineStart[1] + (lineVector[1] * lmDot)
+    return (cpX, cpY)
+
+    # A, B, C = lineStart, lineEnd, point
+
+    # AB_dx = A[0] - B[0]
+    # AB_dy = A[1] - B[1]
+    # AB_angle = math.atan2(AB_dy, AB_dx)
+
+    # AC_dx = C[0] - A[0]
+    # AC_dy = C[1] - A[1]
+    # AC_dist = int( ((AC_dx**2)+(AC_dy**2))**0.5 )
+
+    # BC_dx = C[0] - B[0]
+    # BC_dy = C[1] - B[1]
+    # BC_dist = int( ((BC_dx**2)+(BC_dy**2))**0.5 )
+    # BC_angle = math.atan2(BC_dy, BC_dx)
+    # # BC_toward = (int( B[0] + (cos(BC_angle) * BC_dist * 0.75) ), int( B[1] + (sin(BC_angle) * BC_dist * 0.75) ) )
+
+    # AC_BC_angle_d = AB_angle - BC_angle
+    # BC_flip = (int( B[0] + (math.cos(AB_angle + (AC_BC_angle_d)) * BC_dist ) ), int( B[1] + (math.sin(AB_angle + (AC_BC_angle_d)) * BC_dist) ))
+
+    # C_closest = (
+    #     (C[0] + BC_flip[0]) // 2,
+    #     (C[1] + BC_flip[1]) // 2
+    # )
+
+    # return C_closest
+
+def closestPointOnShape(shapeVertices, point, returnIntegers=False):
+    def dxdyh(start, end):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        h = ((dx**2) + (dy**2)) ** 0.5
+        return (dx, dy, h)
+    def vectorFromTo(from_, to_, normalise_=False):
+        dx, dy, h = dxdyh(from_, to_)
+        if not normalise_: h = 1
+        return (dx/h, dy/h)
+    def dot(A, B):
+        return (A[0] * B[0]) + (A[1] * B[1])
+    def getClosestPointTo(points, to):
+        closestDistance = float("inf")
+        closestDistanceIndex = 0
+        for p in range(len(points)):
+            dist = dxdyh(points[p], to)[-1]
+            if dist < closestDistance:
+                closestDistance = dist
+                closestDistanceIndex = p
+        
+        return points[closestDistanceIndex]
+
+    closestPoints = []
+
+    vertexCount = len(shapeVertices)
+    for c in range(vertexCount):
+        n = (c + 1) % vertexCount
+
+        start, end = shapeVertices[c], shapeVertices[n]
+        
+        lineVector = vectorFromTo(start, end, True)
+        # lineLength = lineVector[-1]
+        _, _, lineLength = dxdyh(start, end)
+        
+        start_pointVector = vectorFromTo(start, point)
+        spV_length = start_pointVector[-1]
+        
+        # print(lineVector)
+        # input(start_pointVector)
+
+        lV_spV_dot = max(0, min(dot(lineVector, start_pointVector), lineLength))
+
+        closestPointOnLine = (
+            int(start[0] + (lineVector[0] * lV_spV_dot)),
+            int(start[1] + (lineVector[1] * lV_spV_dot))
+        )
+        closestPoints.append(closestPointOnLine)
+
+    closestPoint = getClosestPointTo(closestPoints, point)
+    
+    if returnIntegers: 
+        return int(closestPoint[0]), int(closestPoint[1])
+
+    return closestPoint
 
 def intToBinaryList(val, desiredListLength_=None):
 
@@ -501,6 +665,7 @@ def binaryListToInt(list_): # [0, 1, 0, 1, 1, 1] = 23
 
 
 def LineCoefficientsFromTwoPoints(A, B):
+
     
     # x1, x2 = A[0], B[0]
     # y1, y2 = A[1], B[1]
@@ -522,3 +687,24 @@ def LineCoefficientsFromTwoPoints(A, B):
     c = ((Ax-Bx)*Ay) + ((By-Ay)*Ax)
 
     return a, b, c
+
+def dot(*vectors):
+    #numberOfVectors = len(vectors)
+    vectorLength = len(vectors[0])
+
+    total = 0
+    for L in range(vectorLength):
+        multi = 1
+        for v in vectors:
+            multi *= v[L]
+        total += multi
+    
+    return total
+
+def dxdyh(A, B):
+    dx = B[0] - A[0]
+    dy = B[1] - A[1]
+    h = ((dx**2) + (dy**2)) ** 0.5
+    return dx, dy, h
+
+#
