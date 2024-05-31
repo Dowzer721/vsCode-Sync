@@ -105,16 +105,30 @@ class Rocket:
     self.path.append(self.pos.xy())
   
   def updateRenderVertices(self):
-    heading = self.vel.heading()
-    self.renderVertices = [
-      ( self.pos.x + (cos(heading+self.renderAngles[i])*rocketRadius*self.renderDistances[i]), 
-        self.pos.y + (sin(heading+self.renderAngles[i])*rocketRadius*self.renderDistances[i])
-      )
-      for i in range(4)
-    ]
+    # heading = self.vel.heading()
+    # self.renderVertices = [
+    #   ( self.pos.x + (cos(heading+self.renderAngles[i])*rocketRadius*self.renderDistances[i]), 
+    #     self.pos.y + (sin(heading+self.renderAngles[i])*rocketRadius*self.renderDistances[i])
+    #   )
+    #   for i in range(4)
+    # ]
+    pass
     
   def render(self):
-    pygame.draw.polygon(canvas, (0,0,0), self.renderVertices, 0)
+    # pygame.draw.polygon(canvas, (0,0,0), self.renderVertices, 0)
+
+    # Drawing a dick because I'm a dick
+    heading = self.vel.heading()
+    shaft = [
+      (self.pos.x + (cos(heading + (pi*1.1))*rocketRadius), self.pos.y + (sin(heading+(pi*1.1))*rocketRadius)),
+      (self.pos.x + (cos(heading + (pi*0.9))*rocketRadius), self.pos.y + (sin(heading+(pi*0.9))*rocketRadius)),
+      (self.pos.x + (cos(heading + (pi*0.1))*rocketRadius), self.pos.y + (sin(heading+(pi*0.1))*rocketRadius)),
+      (self.pos.x + (cos(heading + (pi*1.9))*rocketRadius), self.pos.y + (sin(heading+(pi*1.9))*rocketRadius)),
+    ]
+    pygame.draw.circle(canvas, (0,0,0), shaft[0], rocketRadius//3, 0)
+    pygame.draw.circle(canvas, (0,0,0), shaft[1], rocketRadius//3, 0)
+    pygame.draw.circle(canvas, (0,0,0), ((shaft[2][0] + shaft[3][0])//2, (shaft[2][1] + shaft[3][1])//2 ), rocketRadius//2, 0)
+    pygame.draw.polygon(canvas, (0,0,0), shaft, 0)
   
   def update(self):
     if self.dead == False:
@@ -236,3 +250,19 @@ while True:
 
   delay(0.1)
   # print(frame)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
